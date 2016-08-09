@@ -1,0 +1,26 @@
+{
+  "name": "mygram-db",
+  "version": "1.0.0",
+  "description": "Mygram Database Client",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daguiheso/MyGram-db.git"
+  },
+  "author": "Daniel Hernandez @daviheso",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daguiheso/MyGram-db/issues"
+  },
+  "homepage": "https://github.com/daguiheso/MyGram-db#readme",
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "standard": "^7.1.2"
+  }
+}
