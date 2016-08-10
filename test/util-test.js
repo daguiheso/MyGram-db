@@ -44,13 +44,13 @@ test('extracting hashtags from text', t => {
 
   // que pasa si el texto no tiene tags, pues espero que me devuelva un array vacio
   tags = utils.extractTags('a picture with no tags')
-  t.deepEquals(tags, [])
+  t.deepEqual(tags, [])
 
   // que pasa si no le paso ningun argumento a la funcion
   tags = utils.extractTags()
-  t.deepEquals(tags, [])
+  t.deepEqual(tags, [])
 
   // que pasa si llaman la funcion con un null
   tags = utils.extractTags(null)
-  t.deepEquals(tags, [])
+  t.deepEqual(tags, [])
 })
