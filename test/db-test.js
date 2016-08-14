@@ -61,4 +61,28 @@ test('save image', async t => {
    * ser igual a 'function'
    */
   t.is(typeof db.saveImage, 'function', 'saveImage is function')
+
+  // Creando imagen aleatoria en cada test
+  let image = {
+    url: `http://mygram.test/${uuid.v4()}.jpg`,
+    likes: 0,
+    liked: false,
+    user_id: uuid.uuid()
+  }
+
+  // grabar imagen que le pasamos
+  let created = await db.saveImage(image)
+  // propiedad url de la imagen que me devuelve el metodo sea igual a la url que grabamos
+  t.is(created.url, image.url)
+  // comparacion de likes
+  t.is(created.likes, image.likes)
+  // comparacion de liked
+  t.is(created.liked, image.liked)
+  // comparacion de user_id
+  t.is(created.user_id, image.user_id)
+  // Estas dos aserciones siguientes deben ser creadas en la implementacion
+  // garantizar que la imagen viene con id (autogenerado por db) de tipo string
+  t.is(typeof created.id, 'string')
+  // garantizar que la imagen viene con la fecha de creacion
+  t.truthy(created.createdAt)
 })
