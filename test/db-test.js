@@ -64,6 +64,7 @@ test('save image', async t => {
 
   // Creando imagen aleatoria en cada test
   let image = {
+    description: 'an #awesome picture with #tags #relax',
     url: `http://mygram.test/${uuid.v4()}.jpg`,
     likes: 0,
     liked: false,
@@ -72,17 +73,23 @@ test('save image', async t => {
 
   // grabar imagen que le pasamos
   let created = await db.saveImage(image)
+  // garantizar que descripcion viene
+  t.is(created.description, image.description)
   // propiedad url de la imagen que me devuelve el metodo sea igual a la url que grabamos
   t.is(created.url, image.url)
   // comparacion de likes
   t.is(created.likes, image.likes)
   // comparacion de liked
   t.is(created.liked, image.liked)
+  // verificar que objeto created tenga los tags
+  t.deepEqual(created.tags, ['awesome', 'tags', 'relax'])
   // comparacion de user_id
   t.is(created.user_id, image.user_id)
   // Estas dos aserciones siguientes deben ser creadas en la implementacion
   // garantizar que la imagen viene con id (autogenerado por db) de tipo string
   t.is(typeof created.id, 'string')
+  // propiedad es igual a la codificacion en base 62 del id oficial de la imagen
+  t.is(created.public_id, uuid.encode(created.id))
   // garantizar que la imagen viene con la fecha de creacion
   t.truthy(created.createdAt)
 })
