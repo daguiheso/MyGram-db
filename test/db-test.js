@@ -105,3 +105,14 @@ test('like image', async t => {
   // garantizo que likes de la imagen son iguales a los likes de la info
   t.is(result.likes, image.likes + 1)
 })
+
+// test obtener imagen
+test('get image', async t => {
+  t.is(typeof db.getImage, 'function', 'getImage is a function')
+  let image = fixtures.getImage()
+  let created = await db.saveImage(image)
+  let result = await db.getImage(created.public_id)
+
+  // garantizar que imagen creada es igual a la obtenida de getImage de la db
+  t.deepEqual(created, result)
+})
