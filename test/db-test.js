@@ -10,6 +10,7 @@ const uuid = require('uuid-base62')
  * ('./lib/db')"
  */
 const Db = require('../')
+const fixtures = require('./fixtures')
 
 /*
  * Queremos crear para cada tets una db diferente para poderla crear y luego eliminar,
@@ -63,13 +64,7 @@ test('save image', async t => {
   t.is(typeof db.saveImage, 'function', 'saveImage is function')
 
   // Creando imagen aleatoria en cada test
-  let image = {
-    description: 'an #awesome picture with #tags #relax',
-    url: `http://mygram.test/${uuid.v4()}.jpg`,
-    likes: 0,
-    liked: false,
-    user_id: uuid.uuid()
-  }
+  let image = fixtures.getImage()
 
   // grabar imagen que le pasamos
   let created = await db.saveImage(image)
