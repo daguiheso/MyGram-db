@@ -24,7 +24,7 @@ const dbName = `mygram_${uuid.v4()}`
 const db = new Db({ db: dbName })
 
 /*
- * Creacion de nuevo metodo que se jecuta siempre antes de correr un test, entonces ava me
+ * Creacion de nuevo metodo que se ejecuta siempre antes de correr un test, entonces ava me
  * permite tener hooks que son metodos que se van a ejecutar antes y despues de ejecutar un
  * test
  */
@@ -87,4 +87,21 @@ test('save image', async t => {
   t.is(created.public_id, uuid.encode(created.id))
   // garantizar que la imagen viene con la fecha de creacion
   t.truthy(created.createdAt)
+})
+
+// test async para likes de imagenes
+test('like image', async t => {
+  // garantizar que la clase Db tenga un metodo likeImage
+  t.is(typeof db.likeImage, 'function', 'likeImage is a function')
+  // obtener imagen de los fixtures
+  let image = fixtures.getImage()
+  // almacenar imagen en la db
+  let created = await db.saveImage(image)
+  // ver el resultado de likeImage que le pasamos siempre el id publico de la img
+  let result = await db.likeImage(created.public_id)
+
+  // garantizo que la propiedad liked de la image sea verdadera
+  t.true(result.liked)
+  // garantizo que likes de la imagen son iguales a los likes de la info
+  t.is(result.likes, image.likes + 1)
 })
