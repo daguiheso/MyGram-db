@@ -2,9 +2,9 @@
 
 const uuid = require('uuid-base62')
 
-// Utilidad para crear imagenes
 
 const fixtures = {
+	// Utilidad para crear imagenes
   getImage () {
     return {
       description: 'an #awesome picture with #tags #relax',
@@ -13,7 +13,17 @@ const fixtures = {
       liked: false,
       user_id: uuid.uuid()
     }
+  },
+	// Utilidad para crear multiples imagenes
+  getImages (n) {
+  	let images = []
+  	while (n-- > 0) {
+  		images.push(this.getImage())
+  	}
+
+  	return images
   }
 }
+
 
 module.exports = fixtures
