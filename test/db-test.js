@@ -13,48 +13,57 @@ const Db = require('../')
 const fixtures = require('./fixtures')
 
 /*
- * Queremos crear para cada tets una db diferente para poderla crear y luego eliminar,
- * entonces utilizamos un metodo para generar id's, numeros o textos aleatorios y mas
- * adelante usaremos tambien ese numero para el id unico de la imagen, para esto la
- * libreria uuid-base62, base62 porque no utilizaremos caracteres especiales.
- */
-// creando name de db aleatorio
-const dbName = `mygram_${uuid.v4()}`
-// instancia de db
-const db = new Db({ db: dbName })
-
-/*
  * Creacion de nuevo metodo que se ejecuta siempre antes de correr un test, entonces ava me
  * permite tener hooks que son metodos que se van a ejecutar antes y despues de ejecutar un
  * test
  */
 
-// Antes de correr un tets condiguramos db
-test.before('setup database', async t => {
+// Antes de correr cada uno de los tets condiguramos db
+test.beforeEach('setup database', async t => {
+  /*
+   * Queremos crear para cada tets una db diferente para poderla crear y luego eliminar,
+   * entonces utilizamos un metodo para generar id's, numeros o textos aleatorios y mas
+   * adelante usaremos tambien ese numero para el id unico de la imagen, para esto la
+   * libreria uuid-base62, base62 porque no utilizaremos caracteres especiales.
+   */
+  // creando name de db aleatorio
+  const dbName = `mygram_${uuid.v4()}`
+  // instancia de db
+  const db = new Db({ db: dbName })
 	// conexion a db con metodo connect que es el que hace el setup
   await db.connect()
+  t.context.db = db
+  t.context.dbName = dbName
 	// test que me diga si db esta conectada
   t.true(db.connected, 'should be connected')
 })
-// Despues de correr los test, desconectarse de la db
-test.after('disconnect database', async t => {
+
+/*
+ * Despues de correr c/u de los test: obtener contexto,desconectarse de la db, borrar db
+ *
+ * Este hook se corre siempre siempre pase lo que pase, si por algun motivo los test no
+ * pasan pues after no se ejecuta porque hay una cancelacion de todos test pero con always
+ * garantizo que siempre se va a ejecutar
+ */
+test.afterEach.always('cleanup database', async t => {
+  // obteniendo el contexto
+  let db = t.context.db
+  let dbName = t.context.dbName
+
   // desconexion a db
   await db.disconnect()
   t.false(db.connected, 'should be disconnected')
-})
-/*
- * Borrar db, este hook se corre siempre siempre pase lo que pase, si por algun motivo los test
- * no pasan pues after no se ejecuta porque hay una cancelacion de todos test pero con always
- * garantizo que siempre se va a ejecutar
- */
-test.after.always('cleanup database', async t => {
-  // pequeña logica de conexion con options por defecto de host y port
+
+  // cleanup database - pequeña logica de conexion con options por defecto de host y port
   let conn = await r.connect({})
   await r.dbDrop(dbName).run(conn)
 })
 
 // test asincrono para grabar imagen
 test('save image', async t => {
+  // obteniendo el contexto
+  let db = t.context.db
+
   /*
    * garantizar que clase tenga la funcion grabar imagen.
    *
@@ -91,6 +100,9 @@ test('save image', async t => {
 
 // test async para likes de imagenes
 test('like image', async t => {
+  // obteniendo el contexto
+  let db = t.context.db
+
   // garantizar que la clase Db tenga un metodo likeImage
   t.is(typeof db.likeImage, 'function', 'likeImage is a function')
   // obtener imagen de los fixtures
@@ -108,6 +120,9 @@ test('like image', async t => {
 
 // test obtener imagen
 test('get image', async t => {
+  // obteniendo el contexto
+  let db = t.context.db
+
   t.is(typeof db.getImage, 'function', 'getImage is a function')
   let image = fixtures.getImage()
   let created = await db.saveImage(image)
@@ -119,6 +134,9 @@ test('get image', async t => {
 
 // test listar imagenes de la db
 test('list all images', async t => {
+  // obteniendo el contexto
+  let db = t.context.db
+
   // obtenemos las imagenes
   let images = fixtures.getImages(3)
   /*
