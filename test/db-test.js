@@ -116,3 +116,25 @@ test('get image', async t => {
   // garantizar que imagen creada es igual a la obtenida de getImage de la db
   t.deepEqual(created, result)
 })
+
+// test listar imagenes de la db
+test('list all images', async t => {
+  // obtenemos las imagenes
+  let images = fixtures.getImages(3)
+  /*
+   * Necesitamos almacenar todas las imagenes en la db asi que usaremos una tecnica
+   * sabemos que saveImage retorna una promesa, entonces creamos un array de
+   * promesas y luego todas esas promesas las resolvemos con Promise.all, es una
+   * forma en que tenemos un array de promesas y las resolvemos hasta que todas las
+   * promsesas terminen y me devuelve un resultado
+   */
+  let saveImages = images.map(img => db.saveImage(img))
+  // array con todas las imagenes creadas
+  let created = await Promise.all(saveImages)
+  // probar metodo
+  let result = await db.getImages()
+  // probar que tamaño de imagenes creadas sea igual al tamaño de images consultadas
+  // no hacemos deepEqual porque algortimo se sorting en rethink puede ser !=
+  t.is(created.length, result.length)
+  // t.is(typeof db.getImages, 'function', 'getImages is a function')
+})
