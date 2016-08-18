@@ -10,6 +10,7 @@ const uuid = require('uuid-base62')
  * ('./lib/db')"
  */
 const Db = require('../')
+const utils = require('../lib/utils')
 const fixtures = require('./fixtures')
 
 /*
@@ -155,4 +156,23 @@ test('list all images', async t => {
   // no hacemos deepEqual porque algortimo se sorting en rethink puede ser !=
   t.is(created.length, result.length)
   // t.is(typeof db.getImages, 'function', 'getImages is a function')
+})
+
+// test saveUser
+test('save user', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.saveUser, 'function', 'saveUser is a function')
+
+  let user = fixtures.getUser()
+  let plainPassword = user.password
+  let created = await db.saveUser(user)
+
+  t.is(user.username, created.username)
+  t.is(user.email, created.email)
+  t.is(user.name, created.name)
+  t.is(utils.encrypt(plainPassword), created.password)
+  t.is(typeof created.id, 'string')
+  // truthy verifica que halla un valor
+  t.truthy(created.createdAt)
 })
