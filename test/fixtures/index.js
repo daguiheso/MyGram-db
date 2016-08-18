@@ -21,6 +21,15 @@ const fixtures = {
     }
 
     return images
+  },
+  // Retorna user generico
+  getUser () {
+    return {
+      name: 'A random user',
+      username: `user_${uuid.v4()}`,
+      password: uuid.uuid(),
+      email: `${uuid.v4()}@mygram.test`
+    }
   }
 }
 
