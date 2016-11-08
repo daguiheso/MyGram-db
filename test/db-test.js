@@ -176,3 +176,18 @@ test('save user', async t => {
   // truthy verifica que halla un valor
   t.truthy(created.createdAt)
 })
+
+// test getUser
+
+test('get user', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.getUser, 'function', 'getUser is a function')
+
+  let user = fixtures.getUser()
+  let created = await db.saveUser(user)
+  let result = await db.getUser(user.username)
+
+  // garantizar que imagen creada es igual a la obtenida de getImage de la db
+  t.deepEqual(created, result)
+})
