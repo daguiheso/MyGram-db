@@ -188,7 +188,6 @@ test('save user', async t => {
 })
 
 // test getUser
-
 test('get user', async t => {
   let db = t.context.db
 
@@ -205,6 +204,7 @@ test('get user', async t => {
   t.throws(db.getUser('foo'), /not found/)
 })
 
+// test authenticate
 test('authenticate user', async t => {
   let db = t.context.db
 
@@ -226,6 +226,7 @@ test('authenticate user', async t => {
   t.false(failure)
 })
 
+// test list images by user
 test('list images by user', async t => {
   let db = t.context.db
 
@@ -251,5 +252,34 @@ test('list images by user', async t => {
   await Promise.all(saveImages)
 
   let result = await db.getImagesByUser(userId)
+  t.is(result.length, random)
+})
+
+// test list images by tag
+test('list images by tag', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.getImagesByTag, 'function', 'getImagesByTag is a function')
+
+  let images = fixtures.getImages(10)
+  let tag = '#filterit'
+  let random = Math.round(Math.random() * images.length)
+
+  // arreglo de promesas para guardar imagenes
+  let saveImages = []
+  // asignando imagenes a ciertos users
+  for (let i = 0; i < images.length; i++) {
+    if (i < random) {
+      images[i].description = tag
+    }
+
+    // guardando promesas en un array, ya que db.saveImage() retorna una promise
+    saveImages.push(db.saveImage(images[i]))
+  }
+
+  // resolviendo arreglo de promesas
+  await Promise.all(saveImages)
+
+  let result = await db.getImagesByTag(tag)
   t.is(result.length, random)
 })
