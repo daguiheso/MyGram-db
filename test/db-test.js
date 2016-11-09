@@ -131,6 +131,16 @@ test('get image', async t => {
 
   // garantizar que imagen creada es igual a la obtenida de getImage de la db
   t.deepEqual(created, result)
+  /*
+   * t.throws recibe como primer argumento una function o tambien una promesa y la ejecuta
+   * si esto lanza una excepcion o rejection, el segundo argumento me va a permitir hacer
+   * un reject para hacer matching del error.
+   *
+   * En este caso hacemos matching con un reject para ver si el mensaje de error de un rejection
+   * contiene la palabra "not found"
+   */
+  // lanza error cuando tenga una imagen de la db que no exista
+  t.throws(db.getImage('foo'), /not found/)
 })
 
 // test listar imagenes de la db
@@ -190,6 +200,9 @@ test('get user', async t => {
 
   // garantizar que imagen creada es igual a la obtenida de getImage de la db
   t.deepEqual(created, result)
+
+  // lanza error cuando tenga una user de la db que no exista y devuelva el mensaje not found
+  t.throws(db.getUser('foo'), /not found/)
 })
 
 test('authenticate user', async t => {
@@ -204,6 +217,11 @@ test('authenticate user', async t => {
   let success = await db.authenticate(user.username, plainPassword)
   t.true(success)
 
+  // password fails
   let fail = await db.authenticate(user.username, 'lore5130')
   t.false(fail)
+
+  // username and password fail
+  let failure = await db.authenticate('foo', 'lore5130')
+  t.false(failure)
 })
