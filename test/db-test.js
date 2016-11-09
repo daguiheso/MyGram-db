@@ -191,3 +191,19 @@ test('get user', async t => {
   // garantizar que imagen creada es igual a la obtenida de getImage de la db
   t.deepEqual(created, result)
 })
+
+test('authenticate user', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.authenticate, 'function', 'authenticate is a function')
+
+  let user = fixtures.getUser()
+  let plainPassword = user.password
+  await db.saveUser(user)
+
+  let success = await db.authenticate(user.username, plainPassword)
+  t.true(success)
+
+  let fail = await db.authenticate(user.username, 'lore5130')
+  t.false(fail)
+})
