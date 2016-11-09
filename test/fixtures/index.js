@@ -10,7 +10,7 @@ const fixtures = {
       url: `http://mygram.test/${uuid.v4()}.jpg`,
       likes: 0,
       liked: false,
-      user_id: uuid.uuid()
+      userId: uuid.uuid()
     }
   },
   // Utilidad para crear multiples imagenes

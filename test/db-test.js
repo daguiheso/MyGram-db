@@ -88,13 +88,13 @@ test('save image', async t => {
   t.is(created.liked, image.liked)
   // verificar que objeto created tenga los tags
   t.deepEqual(created.tags, ['awesome', 'tags', 'relax'])
-  // comparacion de user_id
-  t.is(created.user_id, image.user_id)
+  // comparacion de userId
+  t.is(created.userId, image.userId)
   // Estas dos aserciones siguientes deben ser creadas en la implementacion
   // garantizar que la imagen viene con id (autogenerado por db) de tipo string
   t.is(typeof created.id, 'string')
   // propiedad es igual a la codificacion en base 62 del id oficial de la imagen
-  t.is(created.public_id, uuid.encode(created.id))
+  t.is(created.publicId, uuid.encode(created.id))
   // garantizar que la imagen viene con la fecha de creacion
   t.truthy(created.createdAt)
 })
@@ -111,7 +111,7 @@ test('like image', async t => {
   // almacenar imagen en la db
   let created = await db.saveImage(image)
   // ver el resultado de likeImage que le pasamos siempre el id publico de la img
-  let result = await db.likeImage(created.public_id)
+  let result = await db.likeImage(created.publicId)
 
   // garantizo que la propiedad liked de la image sea verdadera
   t.true(result.liked)
@@ -127,7 +127,7 @@ test('get image', async t => {
   t.is(typeof db.getImage, 'function', 'getImage is a function')
   let image = fixtures.getImage()
   let created = await db.saveImage(image)
-  let result = await db.getImage(created.public_id)
+  let result = await db.getImage(created.publicId)
 
   // garantizar que imagen creada es igual a la obtenida de getImage de la db
   t.deepEqual(created, result)
@@ -224,4 +224,32 @@ test('authenticate user', async t => {
   // username and password fail
   let failure = await db.authenticate('foo', 'lore5130')
   t.false(failure)
+})
+
+test('list images by user', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.getImagesByUser, 'function', 'getImagesByUser is a function')
+
+  let images = fixtures.getImages(10)
+  let userId = uuid.uuid()
+  let random = Math.round(Math.random() * images.length)
+
+  // arreglo de promesas para guardar imagenes
+  let saveImages = []
+  // asignando imagenes a ciertos users
+  for (let i = 0; i < images.length; i++) {
+    if (i < random) {
+      images[i].userId = userId
+    }
+
+    // guardando promesas en un array, ya que db.saveImage() retorna una promise
+    saveImages.push(db.saveImage(images[i]))
+  }
+
+  // resolviendo arreglo de promesas
+  await Promise.all(saveImages)
+
+  let result = await db.getImagesByUser(userId)
+  t.is(result.length, random)
 })
