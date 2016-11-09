@@ -30,7 +30,7 @@ test.beforeEach('setup database', async t => {
   // creando name de db aleatorio
   const dbName = `mygram_${uuid.v4()}`
   // instancia de db
-  const db = new Db({ db: dbName })
+  const db = new Db({ db: dbName, setup: true })
 	// conexion a db con metodo connect que es el que hace el setup
   await db.connect()
   t.context.db = db
